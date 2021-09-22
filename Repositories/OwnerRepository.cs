@@ -74,7 +74,7 @@ namespace DogGo.Repositories
                 using (SqlCommand cmd = conn.CreateCommand())
                 {
                     cmd.CommandText = @"
-                        SELECT o.Id, o.[Name], o.Email, o.Phone, o.NeighborhoodId, o.Address, d.[Name], d.Breed, n.[Name] AS NeighborhoodName
+                        SELECT o.Id, o.[Name], o.Email, o.Phone, o.NeighborhoodId, o.Address, d.Id AS DogID, d.[Name] AS DogName, d.Breed, n.[Name] AS Neighborhood
                         FROM Owner o
                         LEFT JOIN Dog d ON o.ID = d.OwnerId
                         LEFT JOIN Neighborhood n ON o.NeighborhoodId = n.Id
@@ -94,8 +94,20 @@ namespace DogGo.Repositories
                             Name = reader.GetString(reader.GetOrdinal("Name")),
                             Address = reader.GetString(reader.GetOrdinal("Address")),
                             NeighborhoodId = reader.GetInt32(reader.GetOrdinal("NeighborhoodId")),
-                            Phone = reader.GetString(reader.GetOrdinal("Phone"))
+                            Phone = reader.GetString(reader.GetOrdinal("Phone")),
+                            Dogs = new List<Dog>()
                         };
+
+                        // If there is a DogId in the database:
+                        if (!reader.IsDBNull(reader.GetOrdinal("DogID")))
+                        {
+                            owner.Dogs.Add(new Dog
+                            {
+                                Id = reader.GetInt32(reader.GetOrdinal("DogID")),
+                                Name = reader.GetString(reader.GetOrdinal("DogName")),
+                                Breed = reader.GetString(reader.GetOrdinal("Breed"))
+                            });
+                        }
 
                         reader.Close();
                         return owner;
@@ -108,5 +120,81 @@ namespace DogGo.Repositories
                 }
             }
         }
+        public void AddOwner(Owner owner)
+        {
+            using (SqlConnection conn = Connection)
+            {
+                conn.Open();
+                using (SqlCommand cmd = conn.CreateCommand())
+                {
+                    cmd.CommandText = @"
+                    INSERT INTO Owner ([Name], Email, Phone, Address, NeighborhoodId)
+                    OUTPUT INSERTED.ID
+                    VALUES (@name, @email, @phoneNumber, @address, @neighborhoodId);
+                ";
+
+                    cmd.Parameters.AddWithValue("@name", owner.Name);
+                    cmd.Parameters.AddWithValue("@email", owner.Email);
+                    cmd.Parameters.AddWithValue("@phoneNumber", owner.Phone);
+                    cmd.Parameters.AddWithValue("@address", owner.Address);
+                    cmd.Parameters.AddWithValue("@neighborhoodId", owner.NeighborhoodId);
+
+                    int id = (int)cmd.ExecuteScalar();
+
+                    owner.Id = id;
+                }
+            }
+        }
+
+        public void UpdateOwner(Owner owner)
+        {
+            using (SqlConnection conn = Connection)
+            {
+                conn.Open();
+
+                using (SqlCommand cmd = conn.CreateCommand())
+                {
+                    cmd.CommandText = @"
+                            UPDATE Owner
+                            SET 
+                                [Name] = @name, 
+                                Email = @email, 
+                                Address = @address, 
+                                Phone = @phone, 
+                                NeighborhoodId = @neighborhoodId
+                            WHERE Id = @id";
+
+                    cmd.Parameters.AddWithValue("@name", owner.Name);
+                    cmd.Parameters.AddWithValue("@email", owner.Email);
+                    cmd.Parameters.AddWithValue("@address", owner.Address);
+                    cmd.Parameters.AddWithValue("@phone", owner.Phone);
+                    cmd.Parameters.AddWithValue("@neighborhoodId", owner.NeighborhoodId);
+                    cmd.Parameters.AddWithValue("@id", owner.Id);
+
+                    cmd.ExecuteNonQuery();
+                }
+            }
+        }
+
+        public void DeleteOwner(int ownerId)
+        {
+            using (SqlConnection conn = Connection)
+            {
+                conn.Open();
+
+                using (SqlCommand cmd = conn.CreateCommand())
+                {
+                    cmd.CommandText = @"
+                            DELETE FROM Owner
+                            WHERE Id = @id
+                        ";
+
+                    cmd.Parameters.AddWithValue("@id", ownerId);
+
+                    cmd.ExecuteNonQuery();
+                }
+            }
+        }
     }
 }
+    

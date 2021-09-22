@@ -1,10 +1,10 @@
 ﻿@model DogGo.Models.Walker
 
 @{
-    ViewData["Title"] = "Details";
+    ViewData["Title"] = "Walker - Detail";
 }
 
-<h1>Details</h1>
+<h1>Detail</h1>
 
 <div>
     <h4>Walker</h4>
@@ -22,19 +22,18 @@
         <dd class = "col-sm-10">
             @Html.DisplayFor(model => model.Name)
         </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Neighborhood.Name)
+        <dt class="col-sm-2">
+            @*            @Html.DisplayNameFor(model => model.Neighborhood.Name) *@
             Neighborhood
         </dt>
         <dd class = "col-sm-10">
             @Html.DisplayFor(model => model.Neighborhood.Name)
         </dd>
         <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.ImageUrl)
             Avatar
         </dt>
         <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.ImageUrl)
+            @*           @Html.DisplayFor(model => model.ImageUrl)  *@
             <img class="bg-info" src="@Model.ImageUrl" alt="avatar" />
         </dd>
     </dl>

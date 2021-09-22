@@ -2,6 +2,9 @@ using DogGo.Models;
 using Microsoft.Data.SqlClient;
 using System.Collections.Generic;
 
+
+//ADD CRUD
+
 namespace DogGo.Repositories
 {
     public interface IWalkerRepository

@@ -171,14 +171,14 @@ namespace DogGo.Repositories
                     cmd.CommandText = @"
                     INSERT INTO Dog ([Name], Breed, Notes, ImageUrl, OwnerId)
                     OUTPUT INSERTED.ID
-                    VALUES (@name, @breed, @notes, @imageUrl, @ownerId);
+                    VALUES (@name, @breed, @notes, @imageUrl, @ownerId)
                 ";
 
                     cmd.Parameters.AddWithValue("@name", dog.Name);
                     cmd.Parameters.AddWithValue("@breed", dog.Breed);
                     cmd.Parameters.AddWithValue("@notes", dog.Notes ?? "None");
                     cmd.Parameters.AddWithValue("@imageUrl", dog.ImageUrl ?? "None");
-                    cmd.Parameters.AddWithValue("ownerId", dog.OwnerId);
+                    cmd.Parameters.AddWithValue("@ownerId", dog.OwnerId);
 
                     int id = (int)cmd.ExecuteScalar();
 

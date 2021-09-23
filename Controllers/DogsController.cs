@@ -39,6 +39,7 @@ namespace DogGo.Controllers
 
 
         // GET: WalkersController1/Create
+        // gets "empty form" view
         public ActionResult Create()
         {
             return View();
